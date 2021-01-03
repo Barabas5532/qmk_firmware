@@ -539,7 +539,7 @@ bool oled_on(void) {
     oled_timeout = timer_read32() + OLED_TIMEOUT;
 #endif
 
-    static const uint8_t PROGMEM display_on[] = {I2C_CMD, DISPLAY_ON};
+    static const uint8_t PROGMEM display_on[] = {I2C_CMD, 0x23, 0x00};
     if (!oled_active) {
         if (I2C_TRANSMIT_P(display_on) != I2C_STATUS_SUCCESS) {
             print("oled_on cmd failed\n");
@@ -555,7 +555,7 @@ bool oled_off(void) {
         return !oled_active;
     }
 
-    static const uint8_t PROGMEM display_off[] = {I2C_CMD, DISPLAY_OFF};
+    static const uint8_t PROGMEM display_off[] = {I2C_CMD, 0x23, 0x20};
     if (oled_active) {
         if (I2C_TRANSMIT_P(display_off) != I2C_STATUS_SUCCESS) {
             print("oled_off cmd failed\n");
