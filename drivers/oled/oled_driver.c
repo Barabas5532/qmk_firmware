@@ -172,6 +172,12 @@ bool oled_init(uint8_t rotation) {
         DISPLAY_START_LINE | 0x00,
         CHARGE_PUMP,
         0x14,
+        //low Iref
+        //doesn't work on my screen, it's probably not a SSD1306B
+        //bit 4 is the internal iref enable
+        //bit 5 selects between the 18uA and 30uA
+        0xAD,
+        0x10,
 #if (OLED_IC != OLED_IC_SH1106)
         // MEMORY_MODE is unsupported on SH1106 (Page Addressing only)
         MEMORY_MODE,
