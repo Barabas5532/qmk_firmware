@@ -27,7 +27,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Used commands from spec sheet: https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
 // for SH1106: https://www.velleman.eu/downloads/29/infosheets/sh1106_datasheet.pdf
 
+#define FADE_INTERVAL 0x00
+
+#if FADE_INTERVAL > 0x0F
+#    error FADE_INTERVAL must be equal to or less than 0x0F
+#endif
+
 // Fundamental Commands
+#define FADE_BLINK 0x23
 #define CONTRAST 0x81
 #define DISPLAY_ALL_ON 0xA5
 #define DISPLAY_ALL_ON_RESUME 0xA4
@@ -539,7 +546,7 @@ bool oled_on(void) {
     oled_timeout = timer_read32() + OLED_TIMEOUT;
 #endif
 
-    static const uint8_t PROGMEM display_on[] = {I2C_CMD, 0x23, 0x00};
+    static const uint8_t PROGMEM display_on[] = {I2C_CMD, FADE_BLINK, 0x00};
     if (!oled_active) {
         if (I2C_TRANSMIT_P(display_on) != I2C_STATUS_SUCCESS) {
             print("oled_on cmd failed\n");
@@ -554,8 +561,8 @@ bool oled_off(void) {
     if (!oled_initialized) {
         return !oled_active;
     }
-
-    static const uint8_t PROGMEM display_off[] = {I2C_CMD, 0x23, 0x20};
+    // change to 0x30 to see the blinking effect                       vvvv
+    static const uint8_t PROGMEM display_off[] = {I2C_CMD, FADE_BLINK, 0x20 | FADE_INTERVAL};
     if (oled_active) {
         if (I2C_TRANSMIT_P(display_off) != I2C_STATUS_SUCCESS) {
             print("oled_off cmd failed\n");
